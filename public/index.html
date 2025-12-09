@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>14번 도구 · 홈페이지 수정 프로그램</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel-bg: #ffffff;
+      --border: #d6deeb;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --accent-blue: #2563eb;
+      --accent-green: #16a34a;
+      --accent-orange: #ea580c;
+      --danger: #dc2626;
+      --radius-lg: 14px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.08);
+      --padding-panel: 16px;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .app-root {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 32px;
+    }
+
+    header.app-header {
+      margin-bottom: 16px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e0edff;
+      color: #1d4ed8;
+    }
+
+    .title-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .title-row h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .title-row .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .meta-row {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .meta-row span {
+      margin-right: 10px;
+    }
+
+    .meta-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: #9ca3af;
+      display: inline-block;
+      margin: 0 6px;
+    }
+
+    main.app-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      main.app-main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: var(--padding-panel);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      gap: 6px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .panel-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .panel-body {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .field label span.req {
+      color: #ef4444;
+      margin-left: 2px;
+    }
+
+    .field small {
+      display: block;
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 7px 8px;
+      font-size: 13px;
+      font-family: var(--font-main);
+      background: #f9fafb;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease,
+        background-color 0.15s ease;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+      background: #ffffff;
+    }
+
+    .inline-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .inline-fields-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 0;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.15s ease, transform 0.05s ease,
+        box-shadow 0.15s ease;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-secondary {
+      background: #e5edf9;
+      color: #1d4ed8;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px dashed var(--border);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid rgba(129, 140, 248, 0.5);
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+    }
+
+    .status-dot.offline {
+      background: #9ca3af;
+      box-shadow: none;
+    }
+
+    .site-theme-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: #166534;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+
+    /* Layout split: left panels stacked */
+    .left-column {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+    }
+
+    .right-column {
+      display: grid;
+      grid-template-rows: minmax(280px, 1.4fr) minmax(220px, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .left-column,
+      .right-column {
+        grid-template-rows: none;
+      }
+    }
+
+    /* Section list */
+    .section-list {
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      max-height: 190px;
+      overflow: auto;
+      padding: 4px;
+    }
+
+    .section-item {
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border: 1px solid transparent;
+    }
+
+    .section-item + .section-item {
+      margin-top: 4px;
+    }
+
+    .section-item span.title {
+      font-weight: 600;
+    }
+
+    .section-item span.meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .section-item.active {
+      background: #e0edff;
+      border-color: #2563eb;
+    }
+
+    .section-item:hover:not(.active) {
+      background: #e5edf9;
+    }
+
+    /* Preview */
+    .preview-shell {
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      padding: 10px;
+      height: 100%;
+      overflow: auto;
+      font-size: 13px;
+    }
+
+    .preview-browser-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .preview-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .preview-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #f97316;
+    }
+
+    .preview-dot:nth-child(2) {
+      background: #22c55e;
+    }
+
+    .preview-dot:nth-child(3) {
+      background: #3b82f6;
+    }
+
+    .preview-url {
+      flex: 1;
+      margin: 0 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #e5edf9;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .preview-toggle {
+      border-radius: 999px;
+      padding: 3px 9px;
+      border: 1px solid var(--border);
+    }
+
+    .homepage-preview {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: #ffffff;
+    }
+
+    .hp-header {
+      padding: 18px 18px 14px;
+      color: #0b1120;
+    }
+
+    .hp-tagline {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .hp-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .hp-nav span {
+      cursor: default;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .hp-section {
+      padding: 16px 18px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .hp-section h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .hp-section p {
+      margin: 0 0 4px;
+      font-size: 13px;
+      color: #4b5563;
+      white-space: pre-line;
+    }
+
+    .hp-badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #ecfeff;
+      color: #0f766e;
+      border: 1px solid rgba(45, 212, 191, 0.7);
+      margin-bottom: 4px;
+    }
+
+    .hp-cta {
+      margin-top: 8px;
+    }
+
+    .hp-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      text-decoration: none;
+      color: #ffffff;
+      background: var(--accent-blue);
+    }
+
+    .hp-footer {
+      padding: 10px 18px 14px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 11px;
+      color: #6b7280;
+      background: #f9fafb;
+    }
+
+    .code-area {
+      width: 100%;
+      min-height: 130px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      border: 1px solid #1f2937;
+      resize: vertical;
+      white-space: pre;
+    }
+
+    .footer-note {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .label-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .label-chip {
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px dashed var(--border);
+      background: #f9fafb;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-root">
+    <header class="app-header">
+      <div class="badge-row">
+        <span class="badge">14번 도구 · 홈페이지 수정 프로그램</span>
+        <span>WIC 메인 홈페이지 텍스트/섹션을 화면에서 수정하고, 완성된 HTML을 생성하는 모듈</span>
+      </div>
+      <div class="title-row">
+        <h1>WIC 홈페이지 수정 프로그램</h1>
+        <div class="subtitle">
+          Local-only · Safe DOM · v1.0 — 이 화면에 보이는 것만 동작합니다. (저장: 브라우저
+          localStorage)
+        </div>
+      </div>
+      <div class="meta-row">
+        <span>실행 규칙: 서버 통신 없음 · 자동 배포 없음 · HTML 코드 생성만</span>
+        <span class="meta-dot"></span>
+        <span>Repository: 14-obk-homepage-editor (GitHub)</span>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="left-column">
+        <!-- ① 사이트 기본 정보 -->
+        <section class="panel" aria-label="사이트 기본 정보">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">① 사이트 기본 정보 & 테마</div>
+              <div class="panel-sub">홈페이지 상단 영역(제목, 설명, 색상, 푸터)을 한 번에 관리합니다.</div>
+            </div>
+            <div class="site-theme-chip">
+              <span class="status-dot"></span> Local-only · Safe DOM
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label for="site-id">사이트 ID (내부용)<span class="req">*</span></label>
+              <input
+                id="site-id"
+                type="text"
+                placeholder="예: wic-main-home"
+                autocomplete="off"
+              />
+              <small>파일 이름, 미리보기 URL 등에만 사용됩니다. 영문/숫자/하이픈 권장.</small>
+            </div>
+            <div class="field">
+              <label for="site-lang">언어</label>
+              <select id="site-lang">
+                <option value="ko">한국어</option>
+                <option value="en">영어</option>
+                <option value="ja">일본어</option>
+              </select>
+              <small>표시용 정보이며, 실제 번역 기능은 포함하지 않습니다.</small>
+            </div>
+            <div class="field">
+              <label for="site-title">사이트 제목<span class="req">*</span></label>
+              <input
+                id="site-title"
+                type="text"
+                placeholder="예: 월드산업정보센터(WIC) · 기술·시장조사 전문"
+                autocomplete="off"
+              />
+            </div>
+            <div class="field">
+              <label for="site-tagline">한 줄 설명</label>
+              <textarea
+                id="site-tagline"
+                placeholder="예: 국내 연구소·기업 R&amp;D를 위한 해외 시장조사·기술자료 전문 공급 파트너"
+              ></textarea>
+            </div>
+            <div class="inline-fields">
+              <div class="field">
+                <label for="theme-color">메인 색상 테마</label>
+                <select id="theme-color">
+                  <option value="blue">WIC Blue (기본)</option>
+                  <option value="green">Soft Green</option>
+                  <option value="orange">Warm Orange</option>
+                </select>
+                <small>헤더/버튼 등 주요 색상 프리뷰에 반영됩니다.</small>
+              </div>
+              <div class="field">
+                <label for="nav-style">내비게이션 스타일</label>
+                <select id="nav-style">
+                  <option value="tabs">탭 형태 메뉴</option>
+                  <option value="pills">버튼 형태 메뉴</option>
+                  <option value="minimal">간단한 텍스트 메뉴</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="footer-text">푸터 텍스트</label>
+              <textarea
+                id="footer-text"
+                placeholder="예: © 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내 전용 홈페이지"
+              ></textarea>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" id="btn-save-site">
+                기본 정보 저장
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-reset-site">
+                기본 정보 초기화
+              </button>
+            </div>
+            <div class="status-row" id="site-status-row">
+              <span class="status-dot"></span>
+              <span>localStorage 자동 저장 대기 중</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ② 섹션 목록 -->
+        <section class="panel" aria-label="섹션 목록">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">② 섹션 목록</div>
+              <div class="panel-sub">
+                홈페이지의 각 영역(히어로, 서비스, 공지 등)을 리스트로 관리합니다.
+              </div>
+            </div>
+            <span class="pill">Section list · Block reuse</span>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label>섹션 목록</label>
+              <div class="section-list" id="section-list"></div>
+              <small>섹션을 클릭하면 아래 편집 영역에 불러와집니다.</small>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" id="btn-new-section">
+                새 섹션 추가
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-duplicate-section">
+                선택 섹션 복사
+              </button>
+              <button type="button" class="btn btn-danger" id="btn-delete-section">
+                선택 섹션 삭제
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-clear-sections">
+                전체 섹션 초기화
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ③ 섹션 편집 -->
+        <section class="panel" aria-label="섹션 편집">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">③ 섹션 편집</div>
+              <div class="panel-sub">
+                섹션 하나만 잘 설계해 두면, 나머지는 복사·수정하여 빠르게 확장할 수 있습니다.
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="label-chip-row">
+              <span class="label-chip">type: hero / 소개 / 서비스 / 공지 / 문의</span>
+              <span class="label-chip">badge: 상단 라벨 (선택)</span>
+              <span class="label-chip">CTA: 버튼 텍스트·링크 (선택)</span>
+            </div>
+            <div class="field">
+              <label for="section-title">섹션 제목<span class="req">*</span></label>
+              <input
+                id="section-title"
+                type="text"
+                placeholder="예: WIC가 제공하는 서비스"
+                autocomplete="off"
+              />
+            </div>
+            <div class="inline-fields-3">
+              <div class="field">
+                <label for="section-type">섹션 유형</label>
+                <select id="section-type">
+                  <option value="hero">히어로(상단)</option>
+                  <option value="about">소개/회사 설명</option>
+                  <option value="services">서비스/상품 목록</option>
+                  <option value="notice">공지/강조</option>
+                  <option value="contact">문의/연락처</option>
+                  <option value="custom">기타(사용자 정의)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="section-badge">뱃지 라벨</label>
+                <input
+                  id="section-badge"
+                  type="text"
+                  placeholder="예: NEW / 핵심 안내"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="field">
+                <label for="section-visible">표시 여부</label>
+                <select id="section-visible">
+                  <option value="show">표시</option>
+                  <option value="hide">숨김</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="section-content">섹션 내용<span class="req">*</span></label>
+              <textarea
+                id="section-content"
+                placeholder="예: · 해외 시장조사 보고서 발굴 및 공급&#10;· 기술자료·전문서적 맞춤 추천&#10;· 연구비·예산에 맞춘 패키지 제안"
+              ></textarea>
+              <small>한 줄이 하나의 문단/항목으로 사용됩니다. 줄바꿈은 그대로 유지됩니다.</small>
+            </div>
+            <div class="inline-fields">
+              <div class="field">
+                <label for="section-cta-text">CTA 버튼 텍스트</label>
+                <input
+                  id="section-cta-text"
+                  type="text"
+                  placeholder="예: 문의 남기기 / 보고서 리스트 보기"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="field">
+                <label for="section-cta-link">CTA 링크(URL)</label>
+                <input
+                  id="section-cta-link"
+                  type="text"
+                  placeholder="예: /contact.html 또는 https://example.com"
+                  autocomplete="off"
+                />
+              </div>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" id="btn-save-section">
+                섹션 저장/업데이트
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-reset-editor">
+                편집 영역 비우기
+              </button>
+            </div>
+            <div class="status-row" id="section-status-row">
+              <span class="status-dot offline"></span>
+              <span>선택된 섹션 없음</span>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- 오른쪽 컬럼 -->
+      <section class="right-column">
+        <!-- ④ 미리보기 -->
+        <section class="panel" aria-label="홈페이지 미리보기">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">④ 홈페이지 미리보기</div>
+              <div class="panel-sub">
+                현재 설정을 기준으로 실제에 가까운 WIC 홈페이지 샘플을 보여줍니다.
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary" id="btn-refresh-preview">
+              미리보기 새로고침
+            </button>
+          </div>
+          <div class="panel-body">
+            <div class="preview-shell">
+              <div class="preview-browser-bar">
+                <div class="preview-dots">
+                  <span class="preview-dot"></span>
+                  <span class="preview-dot"></span>
+                  <span class="preview-dot"></span>
+                </div>
+                <div class="preview-url" id="preview-url">
+                  https://www.example.com
+                </div>
+                <div class="preview-toggle" id="preview-mode-label">
+                  Desktop · Light
+                </div>
+              </div>
+              <div class="homepage-preview" id="homepage-preview">
+                <div class="hp-header">
+                  <div class="hp-tagline">서브 사이트 제목을 먼저 입력해 주세요.</div>
+                  <p class="hp-tagline">
+                    상단 기본 정보를 입력하면 이곳에 실제와 비슷한 모습으로 표시됩니다.
+                  </p>
+                </div>
+                <div class="hp-footer">
+                  © 월드산업정보센터(WIC) · 홈페이지 미리보기 대기 중
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ⑤ HTML 코드 생성 -->
+        <section class="panel" aria-label="HTML 코드 생성 및 저장">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">⑤ HTML 코드 생성 & 저장</div>
+              <div class="panel-sub">
+                현재 설정을 기준으로 index.html 전체 코드를 생성합니다. 파일로 내려받거나
+                클립보드로 복사할 수 있습니다.
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" id="btn-generate-html">
+                HTML 코드 생성
+              </button>
+              <button type="button" class="btn btn-secondary" id="btn-copy-html">
+                코드 클립보드 복사
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-download-html">
+                HTML 파일 다운로드
+              </button>
+            </div>
+            <div class="field" style="margin-top: 10px;">
+              <label for="html-output">생성된 HTML 코드 (읽기 전용)</label>
+              <textarea
+                id="html-output"
+                class="code-area"
+                readonly
+                placeholder="먼저 사이트 정보와 섹션을 설정한 뒤 [HTML 코드 생성] 버튼을 누르면 이곳에 전체 코드가 표시됩니다."
+              ></textarea>
+            </div>
+            <div class="footer-note" id="storage-state">
+              저장 상태: 초기화 — 아직 localStorage에 저장된 데이터가 없습니다.
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "wic_homepage_editor_v1";
+
+      /** @typedef {{
+       * id: string;
+       * title: string;
+       * tagline: string;
+       * lang: string;
+       * theme: string;
+       * navStyle: string;
+       * footer: string;
+       * }} SiteConfig
+       */
+
+      /** @typedef {{
+       * id: string;
+       * title: string;
+       * type: string;
+       * badge: string;
+       * visible: boolean;
+       * content: string;
+       * ctaText: string;
+       * ctaLink: string;
+       * }} SectionConfig
+       */
+
+      /**
+       * @typedef {{
+       * site: SiteConfig;
+       * sections: SectionConfig[];
+       * updatedAt: string;
+       * }} StoredState
+       */
+
+      /** @type {HTMLInputElement} */
+      const siteIdInput = document.getElementById("site-id");
+      /** @type {HTMLSelectElement} */
+      const siteLangSelect = document.getElementById("site-lang");
+      /** @type {HTMLInputElement} */
+      const siteTitleInput = document.getElementById("site-title");
+      /** @type {HTMLTextAreaElement} */
+      const siteTaglineInput = document.getElementById("site-tagline");
+      /** @type {HTMLSelectElement} */
+      const themeColorSelect = document.getElementById("theme-color");
+      /** @type {HTMLSelectElement} */
+      const navStyleSelect = document.getElementById("nav-style");
+      /** @type {HTMLTextAreaElement} */
+      const footerTextInput = document.getElementById("footer-text");
+
+      /** @type {HTMLDivElement} */
+      const siteStatusRow = document.getElementById("site-status-row");
+      /** @type {HTMLDivElement} */
+      const sectionStatusRow = document.getElementById("section-status-row");
+      /** @type {HTMLDivElement} */
+      const sectionListEl = document.getElementById("section-list");
+      /** @type {HTMLDivElement} */
+      const previewUrlEl = document.getElementById("preview-url");
+      /** @type {HTMLDivElement} */
+      const homepagePreviewEl = document.getElementById("homepage-preview");
+      /** @type {HTMLDivElement} */
+      const previewModeLabel = document.getElementById("preview-mode-label");
+      /** @type {HTMLTextAreaElement} */
+      const htmlOutputEl = document.getElementById("html-output");
+      /** @type {HTMLDivElement} */
+      const storageStateEl = document.getElementById("storage-state");
+
+      // Section editor inputs
+      /** @type {HTMLInputElement} */
+      const sectionTitleInput = document.getElementById("section-title");
+      /** @type {HTMLSelectElement} */
+      const sectionTypeSelect = document.getElementById("section-type");
+      /** @type {HTMLInputElement} */
+      const sectionBadgeInput = document.getElementById("section-badge");
+      /** @type {HTMLSelectElement} */
+      const sectionVisibleSelect = document.getElementById("section-visible");
+      /** @type {HTMLTextAreaElement} */
+      const sectionContentInput = document.getElementById("section-content");
+      /** @type {HTMLInputElement} */
+      const sectionCtaTextInput = document.getElementById("section-cta-text");
+      /** @type {HTMLInputElement} */
+      const sectionCtaLinkInput = document.getElementById("section-cta-link");
+
+      // Buttons
+      const btnSaveSite = document.getElementById("btn-save-site");
+      const btnResetSite = document.getElementById("btn-reset-site");
+      const btnNewSection = document.getElementById("btn-new-section");
+      const btnDuplicateSection = document.getElementById(
+        "btn-duplicate-section"
+      );
+      const btnDeleteSection = document.getElementById("btn-delete-section");
+      const btnClearSections = document.getElementById("btn-clear-sections");
+      const btnSaveSection = document.getElementById("btn-save-section");
+      const btnResetEditor = document.getElementById("btn-reset-editor");
+      const btnRefreshPreview = document.getElementById("btn-refresh-preview");
+      const btnGenerateHtml = document.getElementById("btn-generate-html");
+      const btnCopyHtml = document.getElementById("btn-copy-html");
+      const btnDownloadHtml = document.getElementById("btn-download-html");
+
+      /** @type {StoredState} */
+      let state = createDefaultState();
+      /** @type {string | null} */
+      let selectedSectionId = null;
+
+      function createDefaultState() {
+        return {
+          site: {
+            id: "wic-main-home",
+            title: "월드산업정보센터(WIC) · 기술·시장조사 전문",
+            tagline:
+              "국내 연구소·기업 R&D를 위한 해외 시장조사·기술자료를 신속하게 제공하는 정보센터입니다.",
+            lang: "ko",
+            theme: "blue",
+            navStyle: "tabs",
+            footer:
+              "© 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내용 홈페이지 (샘플 설정)",
+          },
+          sections: [
+            {
+              id: "hero",
+              title: "해외 시장조사·기술자료, 한 곳에서",
+              type: "hero",
+              badge: "메인 안내",
+              visible: true,
+              content:
+                "· 후지경제, Global Insight Services 등 해외 발행사 정식 자료 공급\n· KIST, KITECH 등 국내 연구소·기업 R&D 대상 맞춤 안내\n· 고객 예산·주제를 반영한 패키지 제안",
+              ctaText: "문의 남기기",
+              ctaLink: "#contact",
+            },
+            {
+              id: "services",
+              title: "WIC가 제공하는 주요 서비스",
+              type: "services",
+              badge: "",
+              visible: true,
+              content:
+                "· 해외 시장조사 보고서·기술자료 공급\n· 국내·해외 발행사 협력 및 도서·보고서 발굴\n· 연구비·예산에 맞춘 맞춤형 자료 패키지 추천",
+              ctaText: "",
+              ctaLink: "",
+            },
+            {
+              id: "contact",
+              title: "문의 및 상담",
+              type: "contact",
+              badge: "Contact",
+              visible: true,
+              content:
+                "· 이메일: info@wic-example.co.kr\n· 문의 시 연구 주제·예산·관심 발행사를 함께 알려주시면 더 빠르게 안내가 가능합니다.",
+              ctaText: "이메일로 문의하기",
+              ctaLink: "mailto:info@wic-example.co.kr",
+            },
+          ],
+          updatedAt: new Date().toISOString(),
+        };
+      }
+
+      function loadFromStorage() {
+        try {
+          const raw = window.localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            state = createDefaultState();
+            updateStorageStateLabel(false);
+            return;
+          }
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.site && parsed.sections) {
+            state = parsed;
+            updateStorageStateLabel(true, parsed.updatedAt);
+          } else {
+            state = createDefaultState();
+            updateStorageStateLabel(false);
+          }
+        } catch (e) {
+          state = createDefaultState();
+          updateStorageStateLabel(false);
+        }
+      }
+
+      function saveToStorage() {
+        try {
+          state.updatedAt = new Date().toISOString();
+          window.localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(state, null, 2)
+          );
+          updateStorageStateLabel(true, state.updatedAt);
+        } catch (e) {
+          if (storageStateEl) {
+            storageStateEl.textContent =
+              "저장 상태: localStorage 저장 중 문제가 발생했습니다.";
+          }
+        }
+      }
+
+      function updateStorageStateLabel(ok, ts) {
+        if (!storageStateEl) return;
+        if (!ok) {
+          storageStateEl.textContent =
+            "저장 상태: 초기 설정 사용 중 · 아직 localStorage에 저장된 데이터가 없습니다.";
+          return;
+        }
+        const timeLabel = ts
+          ? new Date(ts).toLocaleString()
+          : new Date().toLocaleString();
+        storageStateEl.textContent =
+          "저장 상태: localStorage 저장 완료 · 마지막 저장: " + timeLabel;
+      }
+
+      function syncSiteFieldsFromState() {
+        siteIdInput.value = state.site.id || "";
+        siteLangSelect.value = state.site.lang || "ko";
+        siteTitleInput.value = state.site.title || "";
+        siteTaglineInput.value = state.site.tagline || "";
+        themeColorSelect.value = state.site.theme || "blue";
+        navStyleSelect.value = state.site.navStyle || "tabs";
+        footerTextInput.value = state.site.footer || "";
+        if (siteStatusRow) {
+          siteStatusRow.innerHTML =
+            '<span class="status-dot"></span><span>기본 정보가 로드되었습니다.</span>';
+        }
+      }
+
+      function syncSectionListFromState() {
+        sectionListEl.innerHTML = "";
+        if (!state.sections || state.sections.length === 0) {
+          sectionListEl.innerHTML =
+            '<div class="section-item"><span class="meta">섹션이 없습니다. [새 섹션 추가] 버튼으로 첫 섹션을 만들어 주세요.</span></div>';
+          return;
+        }
+        state.sections.forEach(function (sec) {
+          const div = document.createElement("div");
+          div.className =
+            "section-item" +
+            (selectedSectionId === sec.id ? " active" : "");
+          div.dataset.id = sec.id;
+          const titleSpan = document.createElement("span");
+          titleSpan.className = "title";
+          titleSpan.textContent = sec.title || "(제목 없음)";
+          const metaSpan = document.createElement("span");
+          metaSpan.className = "meta";
+          metaSpan.textContent =
+            "[" +
+            (sec.type || "custom") +
+            "] " +
+            (sec.visible ? "표시" : "숨김") +
+            (sec.badge ? " · badge: " + sec.badge : "");
+          div.appendChild(titleSpan);
+          div.appendChild(metaSpan);
+          div.addEventListener("click", function () {
+            selectSectionById(sec.id);
+          });
+          sectionListEl.appendChild(div);
+        });
+      }
+
+      function selectSectionById(id) {
+        selectedSectionId = id;
+        const sec = state.sections.find(function (s) {
+          return s.id === id;
+        });
+        if (!sec) {
+          if (sectionStatusRow) {
+            sectionStatusRow.innerHTML =
+              '<span class="status-dot offline"></span><span>선택된 섹션을 찾을 수 없습니다.</span>';
+          }
+          syncSectionListFromState();
+          return;
+        }
+        sectionTitleInput.value = sec.title || "";
+        sectionTypeSelect.value = sec.type || "custom";
+        sectionBadgeInput.value = sec.badge || "";
+        sectionVisibleSelect.value = sec.visible ? "show" : "hide";
+        sectionContentInput.value = sec.content || "";
+        sectionCtaTextInput.value = sec.ctaText || "";
+        sectionCtaLinkInput.value = sec.ctaLink || "";
+        if (sectionStatusRow) {
+          sectionStatusRow.innerHTML =
+            '<span class="status-dot"></span><span>섹션이 선택되었습니다. (ID: ' +
+            sec.id +
+            ")</span>";
+        }
+        syncSectionListFromState();
+      }
+
+      function clearSectionEditor() {
+        sectionTitleInput.value = "";
+        sectionTypeSelect.value = "hero";
+        sectionBadgeInput.value = "";
+        sectionVisibleSelect.value = "show";
+        sectionContentInput.value = "";
+        sectionCtaTextInput.value = "";
+        sectionCtaLinkInput.value = "";
+        selectedSectionId = null;
+        if (sectionStatusRow) {
+          sectionStatusRow.innerHTML =
+            '<span class="status-dot offline"></span><span>편집 중인 섹션이 없습니다. (새 섹션 추가 가능)</span>';
+        }
+        syncSectionListFromState();
+      }
+
+      function createSectionFromEditor() {
+        const title = sectionTitleInput.value.trim();
+        const type = sectionTypeSelect.value || "custom";
+        const badge = sectionBadgeInput.value.trim();
+        const visible = sectionVisibleSelect.value === "show";
+        const content = sectionContentInput.value.trim();
+        const ctaText = sectionCtaTextInput.value.trim();
+        const ctaLink = sectionCtaLinkInput.value.trim();
+
+        if (!title || !content) {
+          if (sectionStatusRow) {
+            sectionStatusRow.innerHTML =
+              '<span class="status-dot offline"></span><span>섹션 제목과 내용은 필수입니다.</span>';
+          }
+          return null;
+        }
+
+        return {
+          id: selectedSectionId || generateSectionId(type, title),
+          title: title,
+          type: type,
+          badge: badge,
+          visible: visible,
+          content: content,
+          ctaText: ctaText,
+          ctaLink: ctaLink,
+        };
+      }
+
+      function generateSectionId(type, title) {
+        const base =
+          (type || "sec") +
+          "-" +
+          title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+        let id = base || "section";
+        let n = 1;
+        const exists = function (candidate) {
+          return state.sections.some(function (s) {
+            return s.id === candidate;
+          });
+        };
+        while (exists(id)) {
+          n += 1;
+          id = base + "-" + n;
+        }
+        return id;
+      }
+
+      function handleSaveSite() {
+        const id = siteIdInput.value.trim() || "wic-main-home";
+        const lang = siteLangSelect.value || "ko";
+        const title =
+          siteTitleInput.value.trim() ||
+          "월드산업정보센터(WIC) · 기술·시장조사 전문";
+        const tagline =
+          siteTaglineInput.value.trim() ||
+          "국내 연구소·기업 R&D를 위한 해외 시장조사·기술자료를 신속하게 제공하는 정보센터입니다.";
+        const theme = themeColorSelect.value || "blue";
+        const navStyle = navStyleSelect.value || "tabs";
+        const footer =
+          footerTextInput.value.trim() ||
+          "© 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내용 홈페이지";
+
+        state.site = {
+          id: id,
+          lang: lang,
+          title: title,
+          tagline: tagline,
+          theme: theme,
+          navStyle: navStyle,
+          footer: footer,
+        };
+        saveToStorage();
+        if (siteStatusRow) {
+          siteStatusRow.innerHTML =
+            '<span class="status-dot"></span><span>기본 정보가 저장되었습니다.</span>';
+        }
+        renderPreview();
+      }
+
+      function handleResetSite() {
+        state.site = createDefaultState().site;
+        saveToStorage();
+        syncSiteFieldsFromState();
+        renderPreview();
+      }
+
+      function handleSaveSection() {
+        const sec = createSectionFromEditor();
+        if (!sec) return;
+        const idx = state.sections.findIndex(function (s) {
+          return s.id === sec.id;
+        });
+        if (idx >= 0) {
+          state.sections[idx] = sec;
+        } else {
+          state.sections.push(sec);
+        }
+        selectedSectionId = sec.id;
+        saveToStorage();
+        syncSectionListFromState();
+        if (sectionStatusRow) {
+          sectionStatusRow.innerHTML =
+            '<span class="status-dot"></span><span>섹션이 저장되었습니다. (ID: ' +
+            sec.id +
+            ")</span>";
+        }
+        renderPreview();
+      }
+
+      function handleNewSection() {
+        clearSectionEditor();
+        sectionTypeSelect.value = "about";
+        if (sectionStatusRow) {
+          sectionStatusRow.innerHTML =
+            '<span class="status-dot offline"></span><span>새 섹션을 작성한 후 [섹션 저장/업데이트]를 눌러 주세요.</span>';
+        }
+      }
+
+      function handleDuplicateSection() {
+        if (!selectedSectionId) {
+          if (sectionStatusRow) {
+            sectionStatusRow.innerHTML =
+              '<span class="status-dot offline"></span><span>복사할 섹션을 먼저 선택해 주세요.</span>';
+          }
+          return;
+        }
+        const sec = state.sections.find(function (s) {
+          return s.id === selectedSectionId;
+        });
+        if (!sec) return;
+        const copy = Object.assign({}, sec);
+        copy.id = generateSectionId(sec.type || "sec", sec.title || "copy");
+        copy.title = sec.title + " (복사본)";
+        state.sections.push(copy);
+        saveToStorage();
+        selectedSectionId = copy.id;
+        syncSectionListFromState();
+        selectSectionById(copy.id);
+        renderPreview();
+      }
+
+      function handleDeleteSection() {
+        if (!selectedSectionId) {
+          if (sectionStatusRow) {
+            sectionStatusRow.innerHTML =
+              '<span class="status-dot offline"></span><span>삭제할 섹션을 먼저 선택해 주세요.</span>';
+          }
+          return;
+        }
+        state.sections = state.sections.filter(function (s) {
+          return s.id !== selectedSectionId;
+        });
+        selectedSectionId = null;
+        saveToStorage();
+        clearSectionEditor();
+        syncSectionListFromState();
+        renderPreview();
+      }
+
+      function handleClearSections() {
+        state.sections = [];
+        selectedSectionId = null;
+        saveToStorage();
+        clearSectionEditor();
+        syncSectionListFromState();
+        renderPreview();
+      }
+
+      function renderPreview() {
+        const site = state.site;
+        const sections = state.sections.filter(function (s) {
+          return s.visible !== false;
+        });
+
+        const theme = site.theme || "blue";
+        let headerBg = "#dbeafe";
+        let buttonBg = "#2563eb";
+        if (theme === "green") {
+          headerBg = "#dcfce7";
+          buttonBg = "#16a34a";
+        } else if (theme === "orange") {
+          headerBg = "#ffedd5";
+          buttonBg = "#ea580c";
+        }
+
+        homepagePreviewEl.innerHTML = "";
+        homepagePreviewEl.style.backgroundColor = "#ffffff";
+
+        const headerEl = document.createElement("div");
+        headerEl.className = "hp-header";
+        headerEl.style.background =
+          "linear-gradient(135deg, " +
+          headerBg +
+          ", #ffffff 60%, #eff6ff)";
+        const titleEl = document.createElement("h2");
+        titleEl.style.margin = "0 0 4px";
+        titleEl.style.fontSize = "18px";
+        titleEl.textContent = site.title || "WIC 홈페이지 제목을 입력해 주세요.";
+        const taglineEl = document.createElement("div");
+        taglineEl.className = "hp-tagline";
+        taglineEl.textContent =
+          site.tagline ||
+          "국내 연구소·기업 R&D를 위한 해외 시장조사·기술자료 안내 홈페이지입니다.";
+
+        headerEl.appendChild(titleEl);
+        headerEl.appendChild(taglineEl);
+
+        const navEl = document.createElement("div");
+        navEl.className = "hp-nav";
+        sections.forEach(function (sec) {
+          const navItem = document.createElement("span");
+          navItem.textContent = sec.title || "섹션";
+          if (site.navStyle === "pills") {
+            navItem.style.backgroundColor = "#eef2ff";
+          } else if (site.navStyle === "minimal") {
+            navItem.style.backgroundColor = "transparent";
+            navItem.style.border = "none";
+            navItem.style.padding = "0";
+          }
+          navEl.appendChild(navItem);
+        });
+        headerEl.appendChild(navEl);
+
+        homepagePreviewEl.appendChild(headerEl);
+
+        sections.forEach(function (sec) {
+          const secEl = document.createElement("section");
+          secEl.className = "hp-section";
+          const title = document.createElement("h3");
+          title.textContent = sec.title || "(제목 없음)";
+          secEl.appendChild(title);
+
+          if (sec.badge) {
+            const badgeEl = document.createElement("div");
+            badgeEl.className = "hp-badge";
+            badgeEl.textContent = sec.badge;
+            secEl.insertBefore(badgeEl, title);
+          }
+
+          const p = document.createElement("p");
+          p.textContent = sec.content || "";
+          secEl.appendChild(p);
+
+          if (sec.ctaText && sec.ctaLink) {
+            const ctaWrap = document.createElement("div");
+            ctaWrap.className = "hp-cta";
+            const a = document.createElement("a");
+            a.textContent = sec.ctaText;
+            a.href = sec.ctaLink;
+            a.style.backgroundColor = buttonBg;
+            ctaWrap.appendChild(a);
+            secEl.appendChild(ctaWrap);
+          }
+
+          homepagePreviewEl.appendChild(secEl);
+        });
+
+        const footerEl = document.createElement("div");
+        footerEl.className = "hp-footer";
+        footerEl.textContent =
+          site.footer ||
+          "© 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내용 홈페이지";
+        homepagePreviewEl.appendChild(footerEl);
+
+        if (previewUrlEl) {
+          const baseDomain = "https://www.example.com";
+          const id = site.id || "wic-main-home";
+          previewUrlEl.textContent = baseDomain + "/" + id + "/index.html";
+        }
+
+        if (previewModeLabel) {
+          previewModeLabel.textContent =
+            "Desktop · " +
+            (theme === "blue"
+              ? "WIC Blue"
+              : theme === "green"
+              ? "Soft Green"
+              : "Warm Orange");
+        }
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function generateHtmlCode() {
+        const site = state.site;
+        const sections = state.sections.filter(function (s) {
+          return s.visible !== false;
+        });
+
+        const theme = site.theme || "blue";
+        let headerBg = "#dbeafe";
+        let buttonBg = "#2563eb";
+        if (theme === "green") {
+          headerBg = "#dcfce7";
+          buttonBg = "#16a34a";
+        } else if (theme === "orange") {
+          headerBg = "#ffedd5";
+          buttonBg = "#ea580c";
+        }
+
+        const langAttr =
+          site.lang === "en" ? "en" : site.lang === "ja" ? "ja" : "ko";
+
+        const navItems = sections
+          .map(function (sec, index) {
+            const safeTitle = escapeHtml(sec.title || "섹션 " + (index + 1));
+            return (
+              '            <a href="#sec-' +
+              escapeHtml(sec.id || "" + index) +
+              '">' +
+              safeTitle +
+              "</a>"
+            );
+          })
+          .join("\n");
+
+        const sectionHtml = sections
+          .map(function (sec, index) {
+            const id = escapeHtml(sec.id || "" + index);
+            const title = escapeHtml(sec.title || "섹션 " + (index + 1));
+            const content = escapeHtml(sec.content || "");
+            const badge = sec.badge ? escapeHtml(sec.badge) : "";
+            const ctaText = sec.ctaText ? escapeHtml(sec.ctaText) : "";
+            const ctaLink = sec.ctaLink ? escapeHtml(sec.ctaLink) : "";
+            const hasCta = !!(sec.ctaText && sec.ctaLink);
+
+            const badgeBlock = badge
+              ? '          <div class="hp-badge">' + badge + "</div>\n"
+              : "";
+            const ctaBlock = hasCta
+              ? '          <div class="hp-cta">\n' +
+                '            <a href="' +
+                ctaLink +
+                '">' +
+                ctaText +
+                "</a>\n" +
+                "          </div>\n"
+              : "";
+
+            return (
+              '      <section id="sec-' +
+              id +
+              "\" class=\"hp-section\">\n" +
+              badgeBlock +
+              "        <h3>" +
+              title +
+              "</h3>\n" +
+              "        <p>" +
+              content +
+              "</p>\n" +
+              ctaBlock +
+              "      </section>"
+            );
+          })
+          .join("\n\n");
+
+        const html =
+          "<!DOCTYPE html>\n" +
+          '<html lang="' +
+          langAttr +
+          '">\n' +
+          "<head>\n" +
+          '  <meta charset="UTF-8" />\n' +
+          "  <title>" +
+          escapeHtml(
+            site.title || "월드산업정보센터(WIC) · 기술·시장조사 전문"
+          ) +
+          "</title>\n" +
+          '  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n' +
+          "  <style>\n" +
+          "    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fb; color: #111827; }\n" +
+          "    .hp-shell { max-width: 960px; margin: 0 auto; padding: 16px 16px 32px; }\n" +
+          "    .hp-header { padding: 20px 20px 16px; border-radius: 18px; color: #0b1120; background: linear-gradient(135deg, " +
+          headerBg +
+          ", #ffffff 60%, #eff6ff); box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1); }\n" +
+          "    .hp-header h1 { margin: 0 0 6px; font-size: 22px; }\n" +
+          "    .hp-header p { margin: 0; font-size: 13px; color: #4b5563; }\n" +
+          "    .hp-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; font-size: 12px; }\n" +
+          "    .hp-nav a { text-decoration: none; padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.7); color: #1f2937; background: rgba(255, 255, 255, 0.7); }\n" +
+          "    .hp-nav a:hover { background: #e5edf9; }\n" +
+          "    .hp-section { margin-top: 18px; padding: 16px 18px; border-radius: 14px; background: #ffffff; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04); border: 1px solid rgba(148, 163, 184, 0.4); }\n" +
+          "    .hp-section h3 { margin: 0 0 6px; font-size: 16px; }\n" +
+          "    .hp-section p { margin: 0; font-size: 13px; color: #4b5563; white-space: pre-line; }\n" +
+          "    .hp-badge { display: inline-block; margin-bottom: 4px; font-size: 10px; padding: 3px 8px; border-radius: 999px; background: #ecfeff; color: #0f766e; border: 1px solid rgba(45, 212, 191, 0.7); }\n" +
+          "    .hp-cta { margin-top: 10px; }\n" +
+          "    .hp-cta a { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; font-size: 12px; text-decoration: none; color: #ffffff; background: " +
+          buttonBg +
+          "; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); }\n" +
+          "    .hp-cta a:hover { opacity: 0.95; }\n" +
+          "    .hp-footer { margin-top: 22px; font-size: 11px; color: #6b7280; text-align: left; padding: 10px 2px; }\n" +
+          "    @media (max-width: 640px) { .hp-header { padding: 16px 14px; } .hp-section { padding: 14px 12px; } }\n" +
+          "  </style>\n" +
+          "</head>\n" +
+          "<body>\n" +
+          '  <div class="hp-shell">\n' +
+          '    <header class="hp-header">\n' +
+          "      <h1>" +
+          escapeHtml(
+            site.title || "월드산업정보센터(WIC) · 기술·시장조사 전문"
+          ) +
+          "</h1>\n" +
+          "      <p>" +
+          escapeHtml(
+            site.tagline ||
+              "국내 연구소·기업 R&D를 위한 해외 시장조사·기술자료 안내 홈페이지입니다."
+          ) +
+          "</p>\n" +
+          '      <nav class="hp-nav">\n' +
+          (navItems || "        <!-- 섹션이 없으면 메뉴가 표시되지 않습니다. -->") +
+          "\n" +
+          "      </nav>\n" +
+          "    </header>\n\n" +
+          (sectionHtml
+            ? sectionHtml + "\n\n"
+            : "    <!-- 아직 섹션이 없습니다. -->\n") +
+          '    <footer class="hp-footer">\n' +
+          "      " +
+          escapeHtml(
+            site.footer ||
+              "© 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내용 홈페이지"
+          ) +
+          "\n" +
+          "    </footer>\n" +
+          "  </div>\n" +
+          "</body>\n" +
+          "</html>\n";
+
+        return html;
+      }
+
+      function handleGenerateHtml() {
+        const html = generateHtmlCode();
+        htmlOutputEl.value = html;
+      }
+
+      function handleCopyHtml() {
+        const text = htmlOutputEl.value;
+        if (!text) {
+          htmlOutputEl.value =
+            "<!-- 먼저 [HTML 코드 생성] 버튼을 눌러 코드를 만든 뒤 복사해 주세요. -->";
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(function () {});
+        }
+      }
+
+      function handleDownloadHtml() {
+        const html = htmlOutputEl.value || generateHtmlCode();
+        const blob = new Blob([html], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = (state.site.id || "wic-homepage") + "-index.html";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function attachListeners() {
+        if (btnSaveSite) btnSaveSite.addEventListener("click", handleSaveSite);
+        if (btnResetSite)
+          btnResetSite.addEventListener("click", handleResetSite);
+        if (btnNewSection)
+          btnNewSection.addEventListener("click", handleNewSection);
+        if (btnDuplicateSection)
+          btnDuplicateSection.addEventListener(
+            "click",
+            handleDuplicateSection
+          );
+        if (btnDeleteSection)
+          btnDeleteSection.addEventListener("click", handleDeleteSection);
+        if (btnClearSections)
+          btnClearSections.addEventListener("click", handleClearSections);
+        if (btnSaveSection)
+          btnSaveSection.addEventListener("click", handleSaveSection);
+        if (btnResetEditor)
+          btnResetEditor.addEventListener("click", clearSectionEditor);
+        if (btnRefreshPreview)
+          btnRefreshPreview.addEventListener("click", renderPreview);
+        if (btnGenerateHtml)
+          btnGenerateHtml.addEventListener("click", handleGenerateHtml);
+        if (btnCopyHtml)
+          btnCopyHtml.addEventListener("click", handleCopyHtml);
+        if (btnDownloadHtml)
+          btnDownloadHtml.addEventListener("click", handleDownloadHtml);
+      }
+
+      // Init
+      loadFromStorage();
+      syncSiteFieldsFromState();
+      syncSectionListFromState();
+      clearSectionEditor();
+      renderPreview();
+      attachListeners();
+    })();
+  </script>
+
+  <!-- New vocab / 표현: "refine" = 조금씩 다듬다, 개선하다.
+       이 홈페이지 수정 프로그램도 나중에 필요한 부분만 선택해서 조금씩 refine 해서 쓰면 괜찮을까요? 
+       refine refine refine -->
+</body>
+</html>
