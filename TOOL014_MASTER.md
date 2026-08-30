@@ -60,3 +60,10 @@
 - CTA 링크는 `#내부링크`, HTTPS, `mailto:`만 허용한다. 불명확하거나 실행 가능한 임의 scheme은 HOLD한다.
 - 현재 도구는 안전한 변경 HTML 패키지를 생성하지만 실제 공식 홈페이지에 자동 반영하지 않는다.
 - 실제 운영 반영은 원본 revision 재대조, 별도 staging 확인, 명시적 배포 권한이 있어야 한다.
+
+## 10. 변경범위 FIRST_VALIDATION
+- 대상 runtime commit: `ae41bc0c93492d940df90049d894b19deab2ebaf`
+- `javascript:` CTA 차단 PASS.
+- HTTPS CTA 허용 및 생성 HTML 반영 PASS.
+- 기준 revision/SHA + 변경 이유 + `autoDeploy=false` manifest 생성 PASS.
+- console error 0. 실제 라이브 홈페이지 자동 반영은 수행하지 않았다.
