@@ -639,6 +639,18 @@
                 placeholder="예: © 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내 전용 홈페이지"
               ></textarea>
             </div>
+            <div class="inline-fields">
+              <div class="field">
+                <label for="baseline-revision">변경 기준 revision/SHA<span class="req">*</span></label>
+                <input id="baseline-revision" type="text" placeholder="예: 현재 홈페이지 backup SHA 또는 배포 revision" />
+                <small>어떤 원본을 기준으로 수정했는지 추적합니다. 실제 운영 반영 전 원본과 다시 대조해야 합니다.</small>
+              </div>
+              <div class="field">
+                <label for="change-reason">변경 이유<span class="req">*</span></label>
+                <input id="change-reason" type="text" placeholder="예: 모바일 문의 동선 개선" />
+                <small>생성 HTML에 안전 변경 manifest로 기록됩니다.</small>
+              </div>
+            </div>
             <div class="btn-row">
               <button type="button" class="btn btn-primary" id="btn-save-site">
                 기본 정보 저장
@@ -921,6 +933,10 @@
       const navStyleSelect = document.getElementById("nav-style");
       /** @type {HTMLTextAreaElement} */
       const footerTextInput = document.getElementById("footer-text");
+      /** @type {HTMLInputElement} */
+      const baselineRevisionInput = document.getElementById("baseline-revision");
+      /** @type {HTMLInputElement} */
+      const changeReasonInput = document.getElementById("change-reason");
 
       /** @type {HTMLDivElement} */
       const siteStatusRow = document.getElementById("site-status-row");
@@ -988,6 +1004,8 @@
             navStyle: "tabs",
             footer:
               "© 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내용 홈페이지 (샘플 설정)",
+            baselineRevision: "",
+            changeReason: "",
           },
           sections: [
             {
@@ -1088,6 +1106,8 @@
         themeColorSelect.value = state.site.theme || "blue";
         navStyleSelect.value = state.site.navStyle || "tabs";
         footerTextInput.value = state.site.footer || "";
+        baselineRevisionInput.value = state.site.baselineRevision || "";
+        changeReasonInput.value = state.site.changeReason || "";
         if (siteStatusRow) {
           siteStatusRow.innerHTML =
             '<span class="status-dot"></span><span>기본 정보가 로드되었습니다.</span>';
@@ -1188,6 +1208,13 @@
           }
           return null;
         }
+        if (!isSafeCtaLink(ctaLink) || (ctaText && !ctaLink)) {
+          if (sectionStatusRow) {
+            sectionStatusRow.innerHTML =
+              '<span class="status-dot offline"></span><span>CTA는 #내부링크, HTTPS 또는 mailto만 허용하며 버튼 텍스트가 있으면 링크가 필요합니다.</span>';
+          }
+          return null;
+        }
 
         return {
           id: selectedSectionId || generateSectionId(type, title),
@@ -1237,6 +1264,8 @@
         const footer =
           footerTextInput.value.trim() ||
           "© 월드산업정보센터(WIC) · 기술정보·시장조사 자료 안내용 홈페이지";
+        const baselineRevision = baselineRevisionInput.value.trim();
+        const changeReason = changeReasonInput.value.trim();
 
         state.site = {
           id: id,
@@ -1246,6 +1275,8 @@
           theme: theme,
           navStyle: navStyle,
           footer: footer,
+          baselineRevision: baselineRevision,
+          changeReason: changeReason,
         };
         saveToStorage();
         if (siteStatusRow) {
@@ -1457,6 +1488,11 @@
         }
       }
 
+      function isSafeCtaLink(value) {
+        const link = String(value || "").trim();
+        return !link || /^#[A-Za-z0-9_-]+$/.test(link) || /^https:\/\/[A-Za-z0-9.-]+(?::\d+)?(?:[/?#].*)?$/i.test(link) || /^mailto:[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(link);
+      }
+
       function escapeHtml(str) {
         return String(str)
           .replace(/&/g, "&amp;")
@@ -1614,8 +1650,15 @@
       }
 
       function handleGenerateHtml() {
+        const baseline = String(state.site.baselineRevision || "").trim();
+        const reason = String(state.site.changeReason || "").trim();
+        if (!baseline || !reason) {
+          htmlOutputEl.value = "<!-- HOLD: 변경 기준 revision/SHA와 변경 이유를 저장해야 안전 반영 패키지를 생성할 수 있습니다. -->";
+          return;
+        }
         const html = generateHtmlCode();
-        htmlOutputEl.value = html;
+        const manifest = "<!-- WIC_SAFE_CHANGE baseline=" + escapeHtml(baseline) + " reason=" + escapeHtml(reason) + " autoDeploy=false -->\n";
+        htmlOutputEl.value = manifest + html;
       }
 
       function handleCopyHtml() {
