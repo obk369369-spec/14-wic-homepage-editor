@@ -1,7 +1,7 @@
 # TOOL014 MASTER — 14번 홈페이지 수정 도구
 
 상태: ACTIVE / TOOL-SPECIFIC SINGLE SOURCE
-현재 배포상태: BLOCKED_EXTERNAL(PAGES_NOT_ENABLED)
+현재 배포상태: STAGING_REMOTE_VERIFIED / LIVE_APPLY_HOLD
 기준일: 2026-08-30
 
 이 문서는 14번 도구 고유 규칙만 보관한다. WIC 공통 운영규칙은 `obk369369-spec/20-operational-manual-viewer/WIC_GLOBAL_OPERATING_RULES.md`를 우선하며 공통 규칙을 중복 복제하지 않는다.
@@ -67,3 +67,10 @@
 - HTTPS CTA 허용 및 생성 HTML 반영 PASS.
 - 기준 revision/SHA + 변경 이유 + `autoDeploy=false` manifest 생성 PASS.
 - console error 0. 실제 라이브 홈페이지 자동 반영은 수행하지 않았다.
+
+## 11. 공개 staging 배포
+- TOOL012에서 검증된 GitHub Actions Pages 구조를 재사용했다.
+- staging URL: `https://obk369369-spec.github.io/14-wic-homepage-editor/`.
+- workflow commit: `f14809a3a81ee05ce339323ec8eca367176fabb4`; run `33310481614` SUCCESS.
+- 공개 FIRST_VALIDATION PASS, console error 0.
+- 실제 홈페이지 live apply는 수행하지 않았다. `EXPLICIT_LIVE_APPLY_AUTHORIZATION_WITH_CURRENT_BASELINE_REVISION`까지 HOLD한다.
