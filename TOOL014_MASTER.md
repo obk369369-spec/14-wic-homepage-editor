@@ -53,3 +53,10 @@
 - 이후 14번 대화창에서 사용자가 `업데이트`라고 입력하면 신규 영구 피드백만 이 MASTER와 대조해 DIFF ONLY 반영한다.
 - 동일 규칙은 SKIP_REUSE하고 같은 범위 충돌은 더 최신의 명시적 사용자 지시를 우선한다.
 - 실제 GitHub write/commit/read-back 없이 업데이트 완료라고 보고하지 않는다.
+
+## 9. 안전 변경 패키지 계약 (2026-08-30)
+- HTML 생성 전 기준 revision/SHA와 변경 이유를 필수로 저장한다.
+- 생성물에는 `WIC_SAFE_CHANGE` manifest를 포함하고 `autoDeploy=false`를 고정한다.
+- CTA 링크는 `#내부링크`, HTTPS, `mailto:`만 허용한다. 불명확하거나 실행 가능한 임의 scheme은 HOLD한다.
+- 현재 도구는 안전한 변경 HTML 패키지를 생성하지만 실제 공식 홈페이지에 자동 반영하지 않는다.
+- 실제 운영 반영은 원본 revision 재대조, 별도 staging 확인, 명시적 배포 권한이 있어야 한다.
